@@ -11,6 +11,7 @@ func Run(filename string) {
   channel := make(chan []Client)
   go loadConnections(filename, channel)
   for data := range channel {
+    // send data to server here
     fmt.Println(data)
   }
 }
