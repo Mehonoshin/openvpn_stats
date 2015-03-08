@@ -1,4 +1,4 @@
-package reader
+package agent
 
 import (
   "bufio"
@@ -19,7 +19,7 @@ func (c Client) String() string {
   return fmt.Sprintf("%v, %v, %v, %v, %v", c.CommonName, c.IpAddress, c.BytesSent, c.BytesReceived, c.ConnectedSince)
 }
 
-func Read(filename string) []string {
+func read(filename string) []string {
   fmt.Println("Reading file", filename)
 
   file, err := os.Open(filename)
@@ -38,7 +38,7 @@ func Read(filename string) []string {
   return lines
 }
 
-func ParseConnections(lines []string) []Client {
+func parseConnections(lines []string) []Client {
   var clients []Client
   clients = make([]Client, 0)
 
