@@ -35,5 +35,3 @@ func mapArgs(line []string) map[string]string {
 
   return mapping
 }
-
-
