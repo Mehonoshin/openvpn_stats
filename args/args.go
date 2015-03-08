@@ -1,5 +1,7 @@
 package args
 
+// TODO: add args error handling
+
 type Args struct {
   Source        string
   BindAddress   string
