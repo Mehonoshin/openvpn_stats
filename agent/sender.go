@@ -7,7 +7,7 @@ import (
 
 const RefreshInterval = 1000
 
-func Run(filename string) {
+func Run(filename, serverAddress, serverPort string) {
   channel := make(chan []Client)
   go loadConnections(filename, channel)
   for data := range channel {

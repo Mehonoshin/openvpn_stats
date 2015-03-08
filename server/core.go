@@ -1,4 +1,4 @@
 package server
 
-func Run(address string, port string) {
+func Run(address, port string) {
 }

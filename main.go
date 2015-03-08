@@ -13,12 +13,12 @@ func main() {
 
   switch args.Mode {
   case "agent":
-    agent.Run(args.Source)
+    agent.Run(args.Source, args.ServerAddress, args.ServerPort)
   case "server":
     server.Run(args.BindAddress, args.BindPort)
   case "mixed":
     server.Run(args.BindAddress, args.BindPort)
-    agent.Run(args.Source)
+    agent.Run(args.Source, args.ServerAddress, args.ServerPort)
   default:
     fmt.Println("No agent, no server running")
   }
