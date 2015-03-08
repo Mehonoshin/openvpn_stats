@@ -5,14 +5,21 @@ import (
   "fmt"
   "openvpn_stats/args"
   "openvpn_stats/agent"
+  "openvpn_stats/server"
 )
 
 func main() {
   args := args.Parse(os.Args)
 
-  if args.Mode == "agent" || args.Mode == "mixed" {
+  switch args.Mode {
+  case "agent":
     agent.Run(args.Source)
-  } else {
-    fmt.Println("Agent not running")
+  case "server":
+    server.Run(args.BindAddress, args.BindPort)
+  case "mixed":
+    server.Run(args.BindAddress, args.BindPort)
+    agent.Run(args.Source)
+  default:
+    fmt.Println("No agent, no server running")
   }
 }
