@@ -20,7 +20,7 @@ func (c Client) String() string {
 }
 
 func read(filename string) []string {
-  fmt.Println("Reading file", filename)
+  fmt.Println("[AGENT] Reading file", filename)
 
   file, err := os.Open(filename)
   if err != nil {
@@ -49,6 +49,6 @@ func parseConnections(lines []string) []Client {
       clients = append(clients, client)
     }
   }
-
+  fmt.Println("[AGENT] Parsed connections")
   return clients
 }
