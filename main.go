@@ -9,6 +9,8 @@ import (
   "openvpn_stats/server"
 )
 
+// TODO: add some logger
+
 func main() {
   args := args.Parse(os.Args)
   fmt.Println("[MAIN] App starting")

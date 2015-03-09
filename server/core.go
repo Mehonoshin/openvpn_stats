@@ -4,6 +4,8 @@ import (
   "net"
   "fmt"
   "bufio"
+  "encoding/json"
+  "openvpn_stats/agent"
 )
 
 func Run(address, port string) {
@@ -29,6 +31,12 @@ func handleConnection(conn net.Conn) {
   scanner := bufio.NewScanner(conn)
   scanner.Scan()
   message := scanner.Text()
-  fmt.Println("Message:", message)
+
+  var clients []agent.Client
+  err := json.Unmarshal([]byte(message), &clients)
+  if err != nil {
+    fmt.Println("Unable to decode message")
+  }
+  fmt.Println("Clients:", clients)
   conn.Close()
 }
