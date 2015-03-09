@@ -3,6 +3,7 @@ package server
 import (
   "net"
   "fmt"
+  "bufio"
 )
 
 func Run(address, port string) {
@@ -25,8 +26,9 @@ func Run(address, port string) {
 
 func handleConnection(conn net.Conn) {
   fmt.Println("[SERVER] Handling connection")
-  var message []byte
-  fmt.Fscan(conn, &message)
-  fmt.Println("Message:", string(message))
+  scanner := bufio.NewScanner(conn)
+  scanner.Scan()
+  message := scanner.Text()
+  fmt.Println("Message:", message)
   conn.Close()
 }
