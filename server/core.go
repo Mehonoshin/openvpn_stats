@@ -5,13 +5,19 @@ import (
   "fmt"
   "bufio"
   "encoding/json"
-  "openvpn_stats/agent"
+  "openvpn_stats/dto"
 )
 
 func Run(address, port string) {
   fmt.Println("[SERVER] Server started")
-  hostWithPort := fmt.Sprintf("%s:%s", address, port)
 
+  channel := make(chan []dto.Client)
+  go NewStatistics(channel)
+  startTcpServer(address, port, channel)
+}
+
+func startTcpServer(address, port string, channel chan []dto.Client) {
+  hostWithPort := fmt.Sprintf("%s:%s", address, port)
   ln, err := net.Listen("tcp", hostWithPort)
   if err != nil {
     fmt.Println("[SERVER] Unable to bind server on", hostWithPort)
@@ -22,21 +28,21 @@ func Run(address, port string) {
     if err != nil {
       fmt.Println("[SERVER] Unable to handle connect")
     }
-    go handleConnection(conn)
+    go handleConnection(conn, channel)
   }
 }
 
-func handleConnection(conn net.Conn) {
+func handleConnection(conn net.Conn, channel chan []dto.Client) {
   fmt.Println("[SERVER] Handling connection")
   scanner := bufio.NewScanner(conn)
   scanner.Scan()
   message := scanner.Text()
 
-  var clients []agent.Client
+  var clients []dto.Client
   err := json.Unmarshal([]byte(message), &clients)
   if err != nil {
     fmt.Println("Unable to decode message")
   }
-  fmt.Println("Clients:", clients)
+  channel <- clients
   conn.Close()
 }

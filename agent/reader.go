@@ -5,19 +5,8 @@ import (
   "fmt"
   "os"
   "strings"
+  "openvpn_stats/dto"
 )
-
-type Client struct {
-  CommonName     string
-  IpAddress      string
-  BytesSent      string
-  BytesReceived  string
-  ConnectedSince string
-}
-
-func (c Client) String() string {
-  return fmt.Sprintf("%v, %v, %v, %v, %v", c.CommonName, c.IpAddress, c.BytesSent, c.BytesReceived, c.ConnectedSince)
-}
 
 func read(filename string) []string {
   fmt.Println("[AGENT] Reading file", filename)
@@ -38,14 +27,14 @@ func read(filename string) []string {
   return lines
 }
 
-func parseConnections(lines []string) []Client {
-  var clients []Client
-  clients = make([]Client, 0)
+func parseConnections(lines []string) []dto.Client {
+  var clients []dto.Client
+  clients = make([]dto.Client, 0)
 
   for i := 0; i < len(lines); i++ {
     tokens := strings.Split(lines[i], ",")
     if (len(tokens) == 5) && (tokens[0] != "Common Name") {
-      client := Client{tokens[0], tokens[1], tokens[2], tokens[3], tokens[4]}
+      client := dto.Client{tokens[0], tokens[1], tokens[2], tokens[3], tokens[4]}
       clients = append(clients, client)
     }
   }

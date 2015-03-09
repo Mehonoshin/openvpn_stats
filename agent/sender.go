@@ -5,6 +5,7 @@ import (
   "net"
   "time"
   "encoding/json"
+  "openvpn_stats/dto"
 )
 
 const RefreshInterval = 2000
@@ -18,13 +19,13 @@ func Run(filename, serverAddress, serverPort string) {
   }
 }
 
-func loadConnections(filename string) []Client {
+func loadConnections(filename string) []dto.Client {
   lines := read(filename)
   data  := parseConnections(lines)
   return data
 }
 
-func sendToServer(data []Client, serverAddress, serverPort string) {
+func sendToServer(data []dto.Client, serverAddress, serverPort string) {
   hostWithPort := fmt.Sprintf("%s:%s", serverAddress, serverPort)
   conn, err := net.Dial("tcp", hostWithPort)
   if err != nil {
