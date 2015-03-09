@@ -4,16 +4,15 @@ import (
   "fmt"
   "net"
   "time"
-  "bufio"
+  "encoding/json"
 )
 
 const RefreshInterval = 2000
 
 func Run(filename, serverAddress, serverPort string) {
+  fmt.Println("[AGENT] Agent started")
   for {
-    fmt.Println("[AGENT] Agent started")
     data := loadConnections(filename)
-    fmt.Println("[AGENT] Sending data to server")
     go sendToServer(data, serverAddress, serverPort)
     time.Sleep(RefreshInterval * time.Millisecond)
   }
@@ -26,14 +25,15 @@ func loadConnections(filename string) []Client {
 }
 
 func sendToServer(data []Client, serverAddress, serverPort string) {
-  fmt.Println("[AGENT][SENDING PAYLOAD]", data)
-
   hostWithPort := fmt.Sprintf("%s:%s", serverAddress, serverPort)
   conn, err := net.Dial("tcp", hostWithPort)
   if err != nil {
     fmt.Println("[AGENT][ERROR] Unable to connect to server", hostWithPort)
   }
-  fmt.Fprintf(conn, "some data")
-  status, err := bufio.NewReader(conn).ReadString('\n')
-  fmt.Println("[AGENT][STATUS]", status)
+  message, err := json.Marshal(data)
+  if err != nil {
+    fmt.Println("[AGENT][ERROR] Unable to serizlize data to json")
+  }
+  fmt.Fprintf(conn, string(message))
+  conn.Close()
 }

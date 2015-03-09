@@ -8,6 +8,7 @@ import (
 func Run(address, port string) {
   fmt.Println("[SERVER] Server started")
   hostWithPort := fmt.Sprintf("%s:%s", address, port)
+
   ln, err := net.Listen("tcp", hostWithPort)
   if err != nil {
     fmt.Println("[SERVER] Unable to bind server on", hostWithPort)
@@ -24,4 +25,8 @@ func Run(address, port string) {
 
 func handleConnection(conn net.Conn) {
   fmt.Println("[SERVER] Handling connection")
+  var message []byte
+  fmt.Fscan(conn, &message)
+  fmt.Println("Message:", string(message))
+  conn.Close()
 }
