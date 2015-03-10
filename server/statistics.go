@@ -22,12 +22,15 @@ type Server struct {
 type Client struct {
 }
 
-func NewStatistics(channel chan []dto.Client) {
+func newStatistics(add chan []dto.Client, get chan string) {
   totalStatistics := Statistics{0, 0, 0}
 
-  for clients := range channel {
-    totalStatistics = countStatistics(totalStatistics, clients)
-    fmt.Println("Current stats is:", totalStatistics)
+  for {
+    select {
+    case clients := <-add:
+      totalStatistics = countStatistics(totalStatistics, clients)
+      fmt.Println("Current stats is:", totalStatistics)
+    }
   }
 }
 

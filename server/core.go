@@ -11,9 +11,12 @@ import (
 func Run(address, port string) {
   fmt.Println("[SERVER] Server started")
 
-  channel := make(chan []dto.Client)
-  go NewStatistics(channel)
-  startTcpServer(address, port, channel)
+  add := make(chan []dto.Client)
+  get := make(chan string)
+
+  go newStatistics(add, get)
+  go startHttpServer(get)
+  startTcpServer(address, port, add)
 }
 
 func startTcpServer(address, port string, channel chan []dto.Client) {
