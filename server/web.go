@@ -14,10 +14,8 @@ func startHttpServer(get chan string) {
   http.ListenAndServe(":" + HttpPort, nil)
 }
 
-func statJsonHandler(w http.ResponseWriter, r *http.Request) {
-  io.WriteString(w, "Response")
-}
-
 func handler(w http.ResponseWriter, r *http.Request, get chan string) {
-
+  get<- "get stats"
+  response := <-get
+  io.WriteString(w, response)
 }

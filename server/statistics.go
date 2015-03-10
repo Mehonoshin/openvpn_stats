@@ -3,6 +3,7 @@ package server
 import (
   "fmt"
   "strconv"
+  "encoding/json"
   "openvpn_stats/dto"
 )
 
@@ -30,6 +31,8 @@ func newStatistics(add chan []dto.Client, get chan string) {
     case clients := <-add:
       totalStatistics = countStatistics(totalStatistics, clients)
       fmt.Println("Current stats is:", totalStatistics)
+    case <- get:
+      get<- statsToJson(totalStatistics)
     }
   }
 }
@@ -46,4 +49,9 @@ func countStatistics(statistics Statistics, clients []dto.Client) Statistics {
     totalClients++
   }
   return Statistics{totalIn, totalOut, totalClients}
+}
+
+func statsToJson(stats Statistics) string {
+  message, _ := json.Marshal(stats)
+  return string(message)
 }
