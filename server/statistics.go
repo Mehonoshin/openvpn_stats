@@ -3,6 +3,7 @@ package server
 import (
   "fmt"
   "strconv"
+  "time"
   "encoding/json"
   "openvpn_stats/dto"
 )
@@ -18,7 +19,7 @@ func (s Statistics) String() string {
 }
 
 type Server struct {
-  Clients map[string]Client
+  Clients map[string]*Client
 }
 
 type Client struct {
@@ -41,7 +42,8 @@ func newStatistics(add chan []dto.Client, get chan string) {
     case clients := <-add:
       servers = addEvent(servers, clients)
       totalStatistics = refreshStatistics(totalStatistics, servers)
-      fmt.Println("Servers state now", servers)
+      fmt.Println("Servers state now" )
+      printServersState(servers)
     case <- get:
       get<- statsToJson(totalStatistics)
     }
@@ -51,20 +53,44 @@ func newStatistics(add chan []dto.Client, get chan string) {
 func addEvent(servers map[string]Server, newClients []dto.Client) map[string]Server {
   for _, newClient := range newClients {
     if _, ok := servers[newClient.Hostname]; !ok {
-      servers[newClient.Hostname] = Server{make(map[string]Client)}
+      servers[newClient.Hostname] = Server{make(map[string]*Client)}
     }
     server := servers[newClient.Hostname]
 
-    if _, ok := server.Clients[newClient.Hostname]; !ok {
-      server.Clients[newClient.Hostname] = Client{}
+    if _, ok := server.Clients[newClient.CommonName]; !ok {
+      server.Clients[newClient.CommonName] = &Client{}
     }
-    client := server.Clients[newClient.Hostname]
 
     bytesSent,     _ := strconv.ParseInt(newClient.BytesSent, 10, 0)
     bytesReceived, _ := strconv.ParseInt(newClient.BytesReceived, 10, 0)
-    client.Events = append(client.Events, Event{1, bytesSent, bytesReceived})
+
+    events := server.Clients[newClient.CommonName].Events
+    events = addEventToList(events, Event{time.Now().Unix(), bytesSent, bytesReceived})
+
+    server.Clients[newClient.CommonName].Events = events
+    servers[newClient.Hostname] = server
   }
   return servers
+}
+
+func addEventToList(events []Event, event Event) []Event {
+  if len(events) < cap(events)  {
+    //shift and append
+  }
+  events = append(events, event)
+  return events
+}
+
+func printServersState(servers map[string]Server) {
+  for hostname, server := range servers {
+    fmt.Println("Server", hostname)
+    for commonName, client := range server.Clients {
+      fmt.Println("Client", commonName)
+      for _, events := range client.Events {
+        fmt.Println("Events", events)
+      }
+    }
+  }
 }
 
 func refreshStatistics(statistics Statistics, servers map[string]Server) Statistics {
