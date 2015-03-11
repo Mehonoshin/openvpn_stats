@@ -10,6 +10,7 @@ type Client struct {
   BytesSent      string
   BytesReceived  string
   ConnectedSince string
+  Hostname       string
 }
 
 func (c Client) String() string {

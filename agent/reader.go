@@ -34,7 +34,8 @@ func parseConnections(lines []string) []dto.Client {
   for i := 0; i < len(lines); i++ {
     tokens := strings.Split(lines[i], ",")
     if (len(tokens) == 5) && (tokens[0] != "Common Name") {
-      client := dto.Client{tokens[0], tokens[1], tokens[2], tokens[3], tokens[4]}
+      hostname, _ := os.Hostname()
+      client := dto.Client{tokens[0], tokens[1], tokens[2], tokens[3], tokens[4], hostname}
       clients = append(clients, client)
     }
   }
